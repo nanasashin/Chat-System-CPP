@@ -1,2 +1,3 @@
 # Chat-System-CPP
-chat system twin
+chat system type shi
+
