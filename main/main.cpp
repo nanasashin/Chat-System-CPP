@@ -1,40 +1,17 @@
 #include <iostream>
 #include <bits/stdc++.h>
-#include <map>
+
+#include "DataTypes.h"
+#include "Utils.h"
 
 const int USER_LIMIT = 100;
-
-struct Chat {
-    bool exist = false;
-    std::string user_chat[100];
-    std::string receiver_chat[100];
-    int chat_handler[200];
-};
-
-struct User {
-    std::string username;
-    std::string password;
-    bool is_empty = true;
-    std::map<std::string, Chat> messages;
-};
 
 User user[USER_LIMIT];
 
 using namespace std;
 
-class Utils {
-public: 
-    void print_line() {
-        cout << "---------------------------------------\n";
-    }
-
-    string get_string(string output) {
-        string input;
-        cout << "Input " << output << ": ";
-        cin >> input;
-        return input;
-    }
-
+class ChatFunctions : public Utils{
+public:
     bool check_password(string username, string password) {
         int index = get_index(username);
         if (user[index].password == password) {
@@ -49,7 +26,7 @@ public:
         }
         return true;
     }
-    
+
     User user_return(string username) {
         int index = get_index(username);
         User output = user[index];
@@ -63,13 +40,17 @@ public:
     }
 };
 
-class Admin : public Utils {
+class Admin : public ChatFunctions{
 
 };
 
-class UI : public Utils {
+class UI : public ChatFunctions {
 public: 
     User current_user;
+    User receiver_user;
+    bool has_user = false;
+    bool has_receiver = false;
+
 private:
     bool login(string username, string password) {
         if (!user_exist(username)) {
@@ -98,7 +79,6 @@ private:
         the_user.password = password;
 
         update_current_user(the_user);
-        update_database_user(username);
         return true;
     }
 
@@ -111,16 +91,55 @@ private:
         return true;
     }
 
-    bool remove_friend(string username) {
-        current_user.messages.erase(username);
+    bool remove_receiver() {
+        current_user.messages.erase(receiver_user.username);
+        has_receiver = false;
+        return true;
+    }
+
+    bool chat_friend(string friend_name) {
+        if (!current_user.messages[friend_name].exist) {
+            cout << "You don't friend named " << friend_name << endl;
+            return false;
+        }
+        receiver_user = user_return(friend_name);
+        return true;
+    }
+
+    bool chatting () {
+        if (!has_receiver && !has_user) {
+            cout << "Has no user and receiver\n";
+            return false;
+        }
+        if (!has_user) {
+            cout << "has_no_user\n";
+            return false;
+        }
+        if (!has_receiver) {
+            cout << "has no receiver\n";
+            return false;
+        }
+
+        while (true) {
+            break;
+        }
+
+        return true;
     }
 
     void update_current_user(User the_user) {
         current_user = the_user;
+        has_user = true;
     }
 
-    void update_database_user(string username) {
+    void update_current_receiver(User the_user) {
+        receiver_user = the_user;
+        has_receiver = true;
+    }
+
+    void update_database(string username, string receiver_name) {
         user[get_index(username)] = current_user;
+        user[get_index(receiver_name)] = receiver_user;
     }
 };
 
