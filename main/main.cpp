@@ -1,8 +1,8 @@
 #include <iostream>
-#include <bits/stdc++.h>
 
 #include "DataTypes.h"
 #include "Utils.h"
+#include "DataBase.h"
 
 const int USER_LIMIT = 100;
 
@@ -10,48 +10,23 @@ User user[USER_LIMIT];
 
 using namespace std;
 
-class ChatFunctions : public Utils{
-public:
-    bool check_password(string username, string password) {
-        int index = get_index(username);
-        if (user[index].password == password) {
-            return true;
-        }
-        return false;
-    }
-
-    bool user_exist(string username) {
-        if (user[get_index(username)].is_empty) {
-            return false;
-        }
-        return true;
-    }
-
-    User user_return(string username) {
-        int index = get_index(username);
-        User output = user[index];
-        return output;
-    }
-
-    int get_index(string text) {
-        hash<string> hasher;
-        int value = hasher(text) % USER_LIMIT;
-        return value;
-    }
+class Admin : public DataBase{
+    Admin(User *pUser, int const user_limit) : DataBase(pUser, user_limit) {}
 };
 
-class Admin : public ChatFunctions{
-
-};
-
-class UI : public ChatFunctions {
+class UI : public DataBase{
 public: 
+    UI(User *pUser, int const user_limit) : DataBase(pUser, user_limit) {}
+
     User current_user;
     User receiver_user;
     bool has_user = false;
     bool has_receiver = false;
 
-private:
+    string test (string username) {
+        return user_return(username).password;
+    }
+
     bool login(string username, string password) {
         if (!user_exist(username)) {
             cout << "User does not exist!!\n";
@@ -76,9 +51,12 @@ private:
         }
 
         User the_user = user_return(username);
+        the_user.username = username;
         the_user.password = password;
+        the_user.is_empty = false;
 
         update_current_user(the_user);
+        update_database(current_user.username, receiver_user.username);
         return true;
     }
 
@@ -144,6 +122,5 @@ private:
 };
 
 int main() {
-
     return 0;
 }

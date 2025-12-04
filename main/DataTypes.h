@@ -18,4 +18,5 @@ struct User {
     std::map<std::string, Chat> messages;
 };
 
+
 #endif
