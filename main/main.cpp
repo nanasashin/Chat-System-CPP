@@ -1,38 +1,49 @@
 #include <iostream>
 #include <fstream>
+#include <bits/stdc++.h>
 #include <nlohmann\json.hpp>
 
 #include "DataTypes.h"
 #include "Utils.h"
 #include "DataBase.h"
 
+using namespace std;
+using json = nlohmann::json;
+
 const int USER_LIMIT = 100;
 
 User user[USER_LIMIT];
 
-using namespace std;
-using json = nlohmann::json;
+string get_string(string output) {
+    string input;
+    cout << "Input " << output << ": ";
+    cin >> input;
+    return input;
+}
 
 class SavingMessages : public Utils {
 public:
     SavingMessages(string path="") {
         this->path = path + "/";
-
-        ifstream input_file(path + "message.json");
     }
 
     string path;
 
-    void save_user (User the_user) {
-
-    }
-
-    void save_messsage(string name, string message) {
+    void save_user(User the_user) {
         ifstream input_file(path + "message.json");
         json config;
-        input_file >> message;
 
-        config["message"];
+        config[the_user.username] = {the_user.password};
+    }
+
+    void save_messsage(int id, string name, string message) {
+        ifstream input_file(path + "message.json");
+        json config;
+        input_file >> config;
+
+        string input = get_time() + "|" + name + ": " + message;
+
+        config[id].push_back(input);
     }
 };
 
@@ -45,21 +56,21 @@ public:
     bool has_user = false;
     bool has_receiver = false;
 
-    bool login(string username, string password) {
+    void login(string username, string password) {
         if (!user_exist(username)) {
             cout << "User does not exist!!\n";
-            return false;
+            return;
         }
         
         bool can_log_in = check_password(username, password);
 
         if (!can_log_in) {
             cout << "Incorrect Password!!\n";
-            return false;
+            return;
         }
 
         cout << "Logging in: " << username << endl;
-        return true;
+        return;
     }
 
     bool sign_up(string username, string password) {
@@ -74,56 +85,30 @@ public:
         the_user.is_empty = false;
 
         update_current_user(the_user);
-        update_database(current_user.username, receiver_user.username);
         return true;
     }
 
     bool add_friend(string username) {
-        if (current_user.messages[username].exist) {
-            cout << "User is already a friend\n";
-            return false;
-        }
-        current_user.messages[username].exist = true;
-        return true;
+        current_user.chat_id[receiver_user.username] = create_chat_id(username);
+        receiver_user.chat_id[username] = create_chat_id(username);
     }
 
     bool remove_receiver() {
-        current_user.messages.erase(receiver_user.username);
-        has_receiver = false;
         return true;
     }
 
-    bool chat_friend(string friend_name) {
-        if (!current_user.messages[friend_name].exist) {
-            cout << "You don't friend named " << friend_name << endl;
-            return false;
-        }
-        receiver_user = user_return(friend_name);
-        return true;
+    int create_chat_id(string username) {
+        hash<string> hasher;
+        int value = hasher(username);
+        return value;
     }
 
-    bool chatting () {
-        if (!has_receiver && !has_user) {
-            cout << "Has no user and receiver\n";
-            return false;
-        }
-        if (!has_user) {
-            cout << "has_no_user\n";
-            return false;
-        }
-        if (!has_receiver) {
-            cout << "has no receiver\n";
-            return false;
-        }
-
-        while (true) {
-            break;
-        }
-
-        return true;
+    void update_database() {
+        user[get_index(current_user.username)] = current_user;
+        user[get_index(receiver_user.username)] = receiver_user;
     }
 
-private: 
+private:
     void update_current_user(User the_user) {
         current_user = the_user;
         has_user = true;
@@ -133,18 +118,19 @@ private:
         receiver_user = the_user;
         has_receiver = true;
     }
-
-    void update_database(string username, string receiver_name) {
-        user[get_index(username)] = current_user;
-        user[get_index(receiver_name)] = receiver_user;
-    }
 };
 
 class ChattingFunction : public UserFunction , public SavingMessages{
 public:
     ChattingFunction(User *pUser, int const user_limit, string path) : UserFunction(pUser, user_limit), SavingMessages(path) {}
 
-    bool chatting () {
+    int current_id;
+
+    void change_id(int new_id) {
+        current_id = new_id;
+    }
+
+    bool chatting() {
         if (!has_receiver && !has_user) {
             cout << "Has no user and receiver\n";
             return false;
@@ -158,8 +144,16 @@ public:
             return false;
         }
 
+        string chat;
+
         while (true) {
-            break;
+            getline(cin, chat);
+
+            save_messsage(current_id, current_user.username, chat);
+
+            if (chat == "exit") {
+                break;
+            }
         }
 
         return true;
@@ -171,9 +165,50 @@ public:
     AdminFunction(User *pUser, int const user_limit) : DataBase(pUser, user_limit) {}
 };
 
-class UI : public ChattingFunction {
+class UI : public ChattingFunction , public Getting{
 public: 
-    
+    void main_loop() {
+        bool done = false;
+
+        while (true) {
+            cout << "[0] Log-in\n";
+            cout << "[1] Signup\n";
+            cout << "[2] Connect Friend\n";
+            cout << "[3] Message\n";
+            cout << "[4] Quit\n\n";
+
+            invalid_input:
+
+            switch (get_int("Number")) {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    done = true;
+                    break;
+                
+                default:
+                    goto invalid_input;
+                    cout << "Invalid Input!!\n";
+
+                    break;
+            }    
+        }
+        
+    }
+
+private:
+    void login_page() {
+        string username = get_string("Username");
+        string password = get_string("Password");
+
+        login(username, password);
+    }
 };
 
 int main() {

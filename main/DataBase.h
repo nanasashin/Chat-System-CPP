@@ -7,7 +7,7 @@
 
 class DataBase : public Utils {
 public:
-    DataBase (User *pUser, int const USER_LIMIT) {
+    DataBase(User *pUser, int const USER_LIMIT) {
         this->pUser = pUser;
         this->USER_LIMIT = USER_LIMIT;
     }

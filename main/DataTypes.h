@@ -4,18 +4,11 @@
 #include <map>
 #include <string>
 
-struct Chat {
-    bool exist = false;
-    std::string user_chat[100];
-    std::string receiver_chat[100];
-    int chat_handler[200];
-};
-
 struct User {
     std::string username;
     std::string password;
     bool is_empty = true;
-    std::map<std::string, Chat> messages;
+    std::map<std::string, int> chat_id;
 };
 
 
