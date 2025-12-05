@@ -10,22 +10,14 @@ User user[USER_LIMIT];
 
 using namespace std;
 
-class Admin : public DataBase{
-    Admin(User *pUser, int const user_limit) : DataBase(pUser, user_limit) {}
-};
-
-class UI : public DataBase{
-public: 
-    UI(User *pUser, int const user_limit) : DataBase(pUser, user_limit) {}
+class UserFunction : public DataBase {
+public:
+    UserFunction(User *pUser, int const user_limit) : DataBase(pUser, user_limit) {}
 
     User current_user;
     User receiver_user;
     bool has_user = false;
     bool has_receiver = false;
-
-    string test (string username) {
-        return user_return(username).password;
-    }
 
     bool login(string username, string password) {
         if (!user_exist(username)) {
@@ -105,6 +97,7 @@ public:
         return true;
     }
 
+private: 
     void update_current_user(User the_user) {
         current_user = the_user;
         has_user = true;
@@ -119,6 +112,47 @@ public:
         user[get_index(username)] = current_user;
         user[get_index(receiver_name)] = receiver_user;
     }
+};
+
+class ChattingFunction : public UserFunction {
+public:
+    ChattingFunction(User *pUser, int const user_limit) : UserFunction(pUser, user_limit){}
+
+    bool chatting () {
+        if (!has_receiver && !has_user) {
+            cout << "Has no user and receiver\n";
+            return false;
+        }
+        if (!has_user) {
+            cout << "has_no_user\n";
+            return false;
+        }
+        if (!has_receiver) {
+            cout << "has no receiver\n";
+            return false;
+        }
+
+        while (true) {
+            break;
+        }
+
+        return true;
+    }
+};
+
+class SavingMessages {
+public:
+
+};
+
+class AdminFunction : public DataBase {
+public:
+    AdminFunction(User *pUser, int const user_limit) : DataBase(pUser, user_limit) {}
+};
+
+class UI : public UserFunction, public ChattingFunction {
+public: 
+    
 };
 
 int main() {
