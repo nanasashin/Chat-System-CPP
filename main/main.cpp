@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <nlohmann\json.hpp>
 
 #include "DataTypes.h"
 #include "Utils.h"
@@ -9,8 +11,32 @@ const int USER_LIMIT = 100;
 User user[USER_LIMIT];
 
 using namespace std;
+using json = nlohmann::json;
 
-class UserFunction : public DataBase {
+class SavingMessages : public Utils {
+public:
+    SavingMessages(string path="") {
+        this->path = path + "/";
+
+        ifstream input_file(path + "message.json");
+    }
+
+    string path;
+
+    void save_user (User the_user) {
+
+    }
+
+    void save_messsage(string name, string message) {
+        ifstream input_file(path + "message.json");
+        json config;
+        input_file >> message;
+
+        config["message"];
+    }
+};
+
+class UserFunction : public DataBase{
 public:
     UserFunction(User *pUser, int const user_limit) : DataBase(pUser, user_limit) {}
 
@@ -114,9 +140,9 @@ private:
     }
 };
 
-class ChattingFunction : public UserFunction {
+class ChattingFunction : public UserFunction , public SavingMessages{
 public:
-    ChattingFunction(User *pUser, int const user_limit) : UserFunction(pUser, user_limit){}
+    ChattingFunction(User *pUser, int const user_limit, string path) : UserFunction(pUser, user_limit), SavingMessages(path) {}
 
     bool chatting () {
         if (!has_receiver && !has_user) {
@@ -140,17 +166,12 @@ public:
     }
 };
 
-class SavingMessages {
-public:
-
-};
-
 class AdminFunction : public DataBase {
 public:
     AdminFunction(User *pUser, int const user_limit) : DataBase(pUser, user_limit) {}
 };
 
-class UI : public UserFunction, public ChattingFunction {
+class UI : public ChattingFunction {
 public: 
     
 };

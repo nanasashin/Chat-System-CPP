@@ -17,7 +17,6 @@ public:
         cin >> input;
         return input;
     }
-
 };
 
 #endif
