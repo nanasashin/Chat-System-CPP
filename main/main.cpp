@@ -1,14 +1,14 @@
 #include <iostream>
 #include <fstream>
 #include <bits/stdc++.h>
-#include <nlohmann\json.hpp>
+#include <nlohmann/json.hpp>
 
 #include "DataTypes.h"
 #include "Utils.h"
 #include "DataBase.h"
+#include "SavingMessages.h"
 
 using namespace std;
-using json = nlohmann::json;
 
 const int USER_LIMIT = 100;
 
@@ -21,33 +21,7 @@ string get_string(string output) {
     return input;
 }
 
-class SavingMessages : public Utils {
-public:
-    SavingMessages(string path="") {
-        this->path = path + "/";
-    }
-
-    string path;
-
-    void save_user(User the_user) {
-        ifstream input_file(path + "message.json");
-        json config;
-
-        config[the_user.username] = {the_user.password};
-    }
-
-    void save_messsage(int id, string name, string message) {
-        ifstream input_file(path + "message.json");
-        json config;
-        input_file >> config;
-
-        string input = get_time() + "|" + name + ": " + message;
-
-        config[id].push_back(input);
-    }
-};
-
-class UserFunction : public DataBase{
+class UserFunction : public DataBase {
 public:
     UserFunction(User *pUser, int const user_limit) : DataBase(pUser, user_limit) {}
 
@@ -91,6 +65,7 @@ public:
     bool add_friend(string username) {
         current_user.chat_id[receiver_user.username] = create_chat_id(username);
         receiver_user.chat_id[username] = create_chat_id(username);
+        return true;
     }
 
     bool remove_receiver() {
@@ -120,7 +95,7 @@ private:
     }
 };
 
-class ChattingFunction : public UserFunction , public SavingMessages{
+class ChattingFunction : public UserFunction , public SavingMessages {
 public:
     ChattingFunction(User *pUser, int const user_limit, string path) : UserFunction(pUser, user_limit), SavingMessages(path) {}
 
@@ -149,7 +124,7 @@ public:
         while (true) {
             getline(cin, chat);
 
-            save_messsage(current_id, current_user.username, chat);
+            save_messsage(current_id, current_user.username, chat, "nigga");
 
             if (chat == "exit") {
                 break;
@@ -165,7 +140,7 @@ public:
     AdminFunction(User *pUser, int const user_limit) : DataBase(pUser, user_limit) {}
 };
 
-class UI : public ChattingFunction , public Getting{
+class UI : public ChattingFunction , public Getting {
 public: 
     void main_loop() {
         bool done = false;
@@ -212,5 +187,13 @@ private:
 };
 
 int main() {
+    User test_user;
+    SavingMessages save("message_file");
+
+    test_user.username = "nigga";
+    test_user.password = "1234";
+
+    save.save_user(test_user.username, test_user.password);
+
     return 0;
 }

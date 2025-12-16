@@ -13,11 +13,8 @@ public:
     }
 
     string get_time() {
-        time_t now = time(0); 
-        char* dt_string = ctime(&now); 
-        return dt_string;
+        return "1: 00";                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
     }
-
 };
 
 class Getting {

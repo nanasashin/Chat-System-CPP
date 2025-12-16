@@ -1,0 +1,14 @@
+{
+    "admin": {
+        "password": "1234",
+        "status": "admin"
+    },
+    "renz": {
+        "friends": [
+            "hans",
+            "adamson"
+        ],
+        "password": "1234",
+        "status": "user"
+    }
+}
