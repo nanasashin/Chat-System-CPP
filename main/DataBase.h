@@ -1,45 +1,52 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
-#include "DataTypes.h"
 #include "Utils.h"
 #include <bits/stdc++.h>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 class DataBase : public Utils {
 public:
-    DataBase(User *pUser, int const USER_LIMIT) {
-        this->pUser = pUser;
-        this->USER_LIMIT = USER_LIMIT;
+    DataBase(string path) {
+        this->path = path;
     }
 
-    User *pUser;
-    int USER_LIMIT;
+    string path;
 
-    bool check_password(string username, string password) {
-        int index = get_index(username);
-        if (pUser[index].password == password) {
-            return true;
-        }
-        return false;
-    }
+    bool save_user(string username, string password) {
+        json config;
 
-    bool user_exist(string username) {
-        if (pUser[get_index(username)].is_empty) {
+        ifstream input_file(path + "users.json");
+        input_file >> config;
+        input_file.close();
+
+        if (user_exist(config, username)) {
+            cout << "Username is not available\n";
             return false;
         }
+
+        ofstream output_file(path + "users.json");
+        config[username]["password"] = password;
+
+        if (output_file.is_open()) {
+            output_file << std::setw(4) << config << endl;
+            output_file.close();
+        } 
+        else {
+            cerr << "Error: Unable to open file for writing. (Saving Messages -> save_user)" << endl;
+            return false;
+        }
+
+        output_file.close();
         return true;
     }
 
-    User user_return(string username) {
-        int index = get_index(username);
-        User output = pUser[index];
-        return output;
-    }
-
-    int get_index(string text) {
-        hash<string> hasher;
-        int value = hasher(text) % USER_LIMIT;
-        return value;
+    bool user_exist(json config, string username) {
+        if (config.contains(username)) {
+            return true;
+        }
     }
 };
 
